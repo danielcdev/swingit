@@ -1,0 +1,41 @@
+apply plugin: 'java'
+ 
+buildscript {
+	repositories {
+		jcenter()
+	}
+}
+ 
+repositories {
+	mavenCentral()
+}
+ 
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter:1.4.0.RELEASE')
+	compile('org.springframework.batch:spring-batch-core:3.0.7.RELEASE')
+	compile('org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r')
+}
+ 
+compileJava {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+}
+ 
+task fatJar(type: Jar) {
+	baseName = 'swingit'
+    
+	manifest {
+		attributes(
+			"Manifest-Version": "1.0",
+			"Permissions": "all-permissions",
+			"Application-Name": "swingit",
+			"Main-Class": "com.danielcotter.swingit.main.Main"
+		)
+	}
+    
+	from {
+		configurations.compile.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	} with jar
+}
