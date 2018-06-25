@@ -95,6 +95,7 @@ public class RepositoryController {
 
 	private void assignButtonListeners() {
 		view.getMergeFeatureButton().addActionListener(listenerFactory.getMergeFeatureButtonListener(this));
+		view.getNewFeatureButton().addActionListener(listenerFactory.getNewFeatureButtonListener(this));
 	}
 
 	private RepositoryController myController() {

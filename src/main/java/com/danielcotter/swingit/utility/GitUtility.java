@@ -14,10 +14,13 @@ import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -94,9 +97,17 @@ public class GitUtility {
 
 		controller.getGit().merge().include(currentRef).setSquash(true).setStrategy(MergeStrategy.OURS).call();
 
-		controller.getGit().commit()
-				.setMessage("Merge branch '" + currentBranch + "'").call();
+		controller.getGit().commit().setMessage("Merge branch '" + currentBranch + "'").call();
 		push(controller, true);
+	}
+
+	public void createBranch(RepositoryController controller)
+			throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, GitAPIException {
+		String branchName = modalUtility.getInput("Branch name?");
+
+		controller.getGit().branchCreate().setName(branchName).call();
+		controller.getGit().checkout().setName(branchName).call();
+		push(controller);
 	}
 
 	public String getDiff(RepositoryController controller) throws GitAPIException {

@@ -13,7 +13,7 @@ import com.danielcotter.swingit.utility.ModalUtility;
 
 @Component
 @Scope("prototype")
-public class MergeFeatureButton implements ActionListener {
+public class NewFeatureButton implements ActionListener {
 
 	@Autowired
 	private ModalUtility modalUtility;
@@ -26,7 +26,7 @@ public class MergeFeatureButton implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			gitUtility.merge(myController);
+			gitUtility.createBranch(myController);
 		} catch (Exception e1) {
 			modalUtility.error(e1.getMessage());
 		}

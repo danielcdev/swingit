@@ -36,4 +36,11 @@ public class ListenerFactory {
 
 		return thisListener;
 	}
+
+	public ActionListener getNewFeatureButtonListener(RepositoryController controller) {
+		NewFeatureButton thisListener = (NewFeatureButton) context.getBean("newFeatureButton");
+		thisListener.setMyController(controller);
+
+		return thisListener;
+	}
 }

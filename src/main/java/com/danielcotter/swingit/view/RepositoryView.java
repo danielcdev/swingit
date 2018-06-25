@@ -28,7 +28,7 @@ public class RepositoryView {
 	private JButton button2 = new JButton("Commit");
 	private JButton button3 = new JButton("Push");
 	private JButton button4 = new JButton("Merge");
-	private JButton button5 = new JButton("New Feature");
+	private JButton newFeatureButton = new JButton("New Feature");
 	private JButton mergeFeatureButton = new JButton("Merge Feature");
 	private JButton button7 = new JButton("Stage All");
 	private JButton button8 = new JButton("Unstage all");
@@ -52,7 +52,7 @@ public class RepositoryView {
 
 	private void initToolbar() {
 		JToolBar toolbar = new JToolBar("Hello");
-		toolbar.add(button5);
+		toolbar.add(newFeatureButton);
 		toolbar.add(mergeFeatureButton);
 		toolbar.addSeparator();
 		toolbar.add(button7);
@@ -299,18 +299,18 @@ public class RepositoryView {
 	}
 
 	/**
-	 * @return the button5
+	 * @return the newFeatureButton
 	 */
-	public JButton getButton5() {
-		return button5;
+	public JButton getNewFeatureButton() {
+		return newFeatureButton;
 	}
 
 	/**
-	 * @param button5
-	 *            the button5 to set
+	 * @param newFeatureButton
+	 *            the newFeatureButton to set
 	 */
-	public void setButton5(JButton button5) {
-		this.button5 = button5;
+	public void setNewFeatureButton(JButton newFeatureButton) {
+		this.newFeatureButton = newFeatureButton;
 	}
 
 	/**
