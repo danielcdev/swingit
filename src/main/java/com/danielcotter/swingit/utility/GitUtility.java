@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -26,6 +27,7 @@ import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.merge.MergeStrategy;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -108,6 +110,33 @@ public class GitUtility {
 		controller.getGit().branchCreate().setName(branchName).call();
 		controller.getGit().checkout().setName(branchName).call();
 		push(controller);
+	}
+
+	public void stash(RepositoryController controller) throws GitAPIException, IOException {
+		String currentBranch = controller.getGit().getRepository().getBranch();
+		int i = 0;
+
+		for (RevCommit thisRef : controller.getGit().stashList().call()) {
+			if (thisRef.getShortMessage().startsWith(currentBranch))
+				controller.getGit().stashDrop().setStashRef(i).call();
+
+			i++;
+		}
+
+		controller.getGit().stashCreate().setIncludeUntracked(true)
+				.setWorkingDirectoryMessage(currentBranch + " " + new Date().getTime())
+				.setIndexMessage(currentBranch + " " + new Date().getTime()).call();
+	}
+
+	public void loadStash(RepositoryController controller)
+			throws IOException, InvalidRefNameException, GitAPIException {
+		String currentBranch = controller.getGit().getRepository().getBranch();
+
+		for (RevCommit whoKnows : controller.getGit().stashList().call())
+			if (whoKnows.getShortMessage().startsWith(currentBranch)) {
+				controller.getGit().stashApply().setStashRef(whoKnows.getName()).call();
+				break;
+			}
 	}
 
 	public String getDiff(RepositoryController controller) throws GitAPIException {

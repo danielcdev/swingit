@@ -43,4 +43,11 @@ public class ListenerFactory {
 
 		return thisListener;
 	}
+
+	public ActionListener getSwitchFeatureButtonListener(RepositoryController controller) {
+		SwitchFeatureButton thisListener = (SwitchFeatureButton) context.getBean("switchFeatureButton");
+		thisListener.setMyController(controller);
+
+		return thisListener;
+	}
 }

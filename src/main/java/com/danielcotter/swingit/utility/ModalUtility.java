@@ -21,6 +21,13 @@ public class ModalUtility {
 		return null;
 	}
 
+	public String dropDown(String choices[], String text) {
+		String input = (String) JOptionPane.showInputDialog(null, text, "SwinGit", JOptionPane.QUESTION_MESSAGE, null,
+				choices, choices[0]);
+
+		return input;
+	}
+
 	public void error(String error) {
 		JOptionPane.showMessageDialog(null, "Error\n" + error, "SwinGit", JOptionPane.ERROR_MESSAGE);
 	}

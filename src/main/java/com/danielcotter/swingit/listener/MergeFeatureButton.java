@@ -30,6 +30,8 @@ public class MergeFeatureButton implements ActionListener {
 		} catch (Exception e1) {
 			modalUtility.error(e1.getMessage());
 		}
+		
+		myController.monitorRepository();
 	}
 
 	/**
