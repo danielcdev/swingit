@@ -26,6 +26,7 @@ public class NewFeatureButton implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
+			gitUtility.stash(myController);
 			gitUtility.createBranch(myController);
 		} catch (Exception e1) {
 			modalUtility.error(e1.getMessage());
