@@ -32,7 +32,7 @@ public class RepositoryView {
 	private JButton switchFeatureButton = new JButton("Switch Feature");
 	private JButton mergeFeatureButton = new JButton("Merge Feature");
 	private JButton button7 = new JButton("Stage All");
-	private JButton button8 = new JButton("Unstage all");
+	private JButton button8 = new JButton("Commit + Push");
 
 	public void render() {
 		initPanels();
@@ -112,8 +112,8 @@ public class RepositoryView {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.anchor = GridBagConstraints.FIRST_LINE_END;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
+		c.weightx = 1;
+		c.weighty = 0.2;
 		c.gridx = 1;
 		c.gridy = 1;
 
