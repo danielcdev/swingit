@@ -143,7 +143,6 @@ public class RepositoryController {
 			mainView.getTabPane().setTitleAt(0, isModified + git.getRepository().getWorkTree().getName() + " ["
 					+ git.getRepository().getBranch() + "]");
 		} catch (Exception e) {
-			modalUtility.error(e.getMessage());
 		}
 	}
 
