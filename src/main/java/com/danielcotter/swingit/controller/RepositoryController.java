@@ -74,9 +74,14 @@ public class RepositoryController {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
-				if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_V) {
+				if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
 					try {
-						gitUtility.commit(myController(), modalUtility.getInput("Commit message?"));
+						String commitMessage = modalUtility.getInput("Commit message?");
+
+						if (commitMessage == null)
+							return false;
+
+						gitUtility.commit(myController(), commitMessage);
 						gitUtility.push(myController());
 					} catch (Exception e1) {
 						modalUtility.error(e1.getMessage());

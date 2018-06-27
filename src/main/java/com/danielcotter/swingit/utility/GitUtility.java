@@ -107,6 +107,9 @@ public class GitUtility {
 			throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, GitAPIException {
 		String branchName = modalUtility.getInput("Branch name?");
 
+		if (branchName == null)
+			return;
+
 		controller.getGit().branchCreate().setName(branchName).call();
 		controller.getGit().checkout().setName(branchName).call();
 		push(controller);
