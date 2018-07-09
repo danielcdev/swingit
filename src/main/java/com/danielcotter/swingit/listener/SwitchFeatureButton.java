@@ -33,7 +33,7 @@ public class SwitchFeatureButton implements ActionListener {
 			List<String> humanReadable = new ArrayList<>();
 
 			for (Ref thisRef : refs) {
-				String name = thisRef.getName().substring(thisRef.getName().lastIndexOf("/") + 1);
+				String name = thisRef.getName().replace("refs/heads/", "");
 
 				if (!name.equals("master") && !name.equals(myController.getGit().getRepository().getBranch()))
 					humanReadable.add(name);
