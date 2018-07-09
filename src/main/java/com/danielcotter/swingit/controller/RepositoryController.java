@@ -6,6 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
@@ -17,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.danielcotter.swingit.listener.ListenerFactory;
+import com.danielcotter.swingit.model.StagingModel;
 import com.danielcotter.swingit.utility.GitUtility;
 import com.danielcotter.swingit.utility.GuiUtility;
 import com.danielcotter.swingit.utility.ModalUtility;
@@ -42,6 +46,9 @@ public class RepositoryController {
 	@Autowired
 	private ModalUtility modalUtility;
 
+	@Autowired
+	private StagingModel stagingModel;
+
 	private CredentialsProvider credentials = null;
 	private List<String> lastUnstaged = new ArrayList<>();
 	private List<String> lastStaged = new ArrayList<>();
@@ -61,8 +68,8 @@ public class RepositoryController {
 	private void assignListListeners() {
 		MouseAdapter myListener = listenerFactory.getStagedAndUnstagedListListener(this);
 
-		view.getStagedJlist().addMouseListener(myListener);
-		view.getUnstagedJlist().addMouseListener(myListener);
+		view.getStagedTree().addMouseListener(myListener);
+		view.getUnstagedTree().addMouseListener(myListener);
 	}
 
 	private void assignKeyListeners() {
@@ -74,9 +81,14 @@ public class RepositoryController {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
-				if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_V) {
+				if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
 					try {
-						gitUtility.commit(myController(), modalUtility.getInput("Commit message?"));
+						String commitMessage = modalUtility.getInput("Commit message?");
+
+						if (commitMessage == null)
+							return false;
+
+						gitUtility.commit(myController(), commitMessage);
 						gitUtility.push(myController());
 					} catch (Exception e1) {
 						modalUtility.error(e1.getMessage());
@@ -138,32 +150,65 @@ public class RepositoryController {
 			mainView.getTabPane().setTitleAt(0, isModified + git.getRepository().getWorkTree().getName() + " ["
 					+ git.getRepository().getBranch() + "]");
 		} catch (Exception e) {
-			modalUtility.error(e.getMessage());
 		}
 	}
 
 	private void updateUnstagedFiles(Status status) {
 		List<String> unstagedFiles = gitUtility.getUnstaged(status);
 
-		if (!unstagedFiles.equals(lastUnstaged)) {
-			lastUnstaged = unstagedFiles;
-			view.getUnstagedList().clear();
+		if (unstagedFiles.equals(lastUnstaged))
+			return;
 
-			for (String thisFile : unstagedFiles)
-				view.getUnstagedList().addElement(thisFile);
+		lastUnstaged = unstagedFiles;
+		stagingModel.getUnstagedFiles().clear();
+
+		for (String thisFile : unstagedFiles)
+			stagingModel.addUnstagedFile(thisFile);
+
+		view.getUnstagedRoot().removeAllChildren();
+
+		for (Map.Entry<String, List<String>> entry : stagingModel.getUnstagedFiles().entrySet()) {
+			DefaultMutableTreeNode rootOfFolder = new DefaultMutableTreeNode(entry.getKey());
+
+			for (String thisFile : entry.getValue())
+				rootOfFolder.add(new DefaultMutableTreeNode(thisFile));
+
+			view.getUnstagedRoot().add(rootOfFolder);
 		}
+
+		view.getUnstagedModel().reload();
+
+		for (int i = 0; i < view.getUnstagedTree().getRowCount(); i++)
+			view.getUnstagedTree().expandRow(i);
 	}
 
 	private void updateStagedFiles(Status status) {
 		List<String> stagedFiles = gitUtility.getStaged(status);
 
-		if (!stagedFiles.equals(lastStaged)) {
-			lastStaged = stagedFiles;
-			view.getStagedList().clear();
+		if (stagedFiles.equals(lastStaged))
+			return;
 
-			for (String thisFile : stagedFiles)
-				view.getStagedList().addElement(thisFile);
+		lastStaged = stagedFiles;
+		stagingModel.getStagedFiles().clear();
+
+		for (String thisFile : stagedFiles)
+			stagingModel.addStagedFile(thisFile);
+
+		view.getStagedRoot().removeAllChildren();
+
+		for (Map.Entry<String, List<String>> entry : stagingModel.getStagedFiles().entrySet()) {
+			DefaultMutableTreeNode rootOfFolder = new DefaultMutableTreeNode(entry.getKey());
+
+			for (String thisFile : entry.getValue())
+				rootOfFolder.add(new DefaultMutableTreeNode(thisFile));
+
+			view.getStagedRoot().add(rootOfFolder);
 		}
+
+		view.getStagedModel().reload();
+
+		for (int i = 0; i < view.getStagedTree().getRowCount(); i++)
+			view.getStagedTree().expandRow(i);
 	}
 
 	/**

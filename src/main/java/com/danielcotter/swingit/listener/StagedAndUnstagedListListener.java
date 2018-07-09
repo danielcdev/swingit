@@ -3,7 +3,8 @@ package com.danielcotter.swingit.listener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JList;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -26,21 +27,34 @@ public class StagedAndUnstagedListListener extends MouseAdapter {
 	RepositoryController myController;
 
 	public void mouseClicked(MouseEvent mouseEvent) {
-		JList<?> thisList = (JList<?>) mouseEvent.getSource();
-		int index = thisList.locationToIndex(mouseEvent.getPoint());
+		JTree thisTree = (JTree) mouseEvent.getSource();
+		Object[] test = thisTree.getSelectionPath().getPath();
+		String filepath = "";
+		boolean isFile = false;
 
-		if (index < 0)
+		for (Object thisObject : test) {
+			if (((DefaultMutableTreeNode) thisObject).getChildCount() == 0) {
+				isFile = true;
+				filepath += "/";
+			}
+
+			filepath += thisObject.toString();
+		}
+
+		if (!isFile)
 			return;
+
+		filepath = filepath.substring(filepath.indexOf("taged Files") + 11, filepath.length());
 
 		try {
 			String newline[] = myController.getView().getDiffArea().getText().split("\\r?\\n");
 			int i = 0;
 
-			if (thisList == myController.getView().getUnstagedJlist()) {
+			if (thisTree == myController.getView().getUnstagedTree()) {
 				for (String thisLine : newline) {
 					i += thisLine.length();
 
-					if (thisLine.contains(thisList.getModel().getElementAt(index).toString())) {
+					if (thisLine.contains(filepath)) {
 						myController.getView().getDiffArea().setCaretPosition(i + thisLine.length());
 						break;
 					}
@@ -54,10 +68,10 @@ public class StagedAndUnstagedListListener extends MouseAdapter {
 			return;
 
 		try {
-			if (thisList == myController.getView().getStagedJlist())
-				gitUtility.unstageFile(myController.getGit(), thisList.getModel().getElementAt(index).toString());
+			if (thisTree == myController.getView().getStagedTree())
+				gitUtility.unstageFile(myController.getGit(), filepath);
 			else
-				gitUtility.stageFile(myController.getGit(), thisList.getModel().getElementAt(index).toString());
+				gitUtility.stageFile(myController.getGit(), filepath);
 		} catch (Exception e) {
 			modalUtility.error(e.getMessage());
 		}

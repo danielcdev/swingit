@@ -5,25 +5,27 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 public class RepositoryView {
 
 	private JPanel panelTop = new JPanel();
 	private JPanel panelLeft = new JPanel();
 	private JPanel panelRight = new JPanel();
+	private DefaultMutableTreeNode unstagedRoot = new DefaultMutableTreeNode("Unstaged Files");
+	private DefaultTreeModel unstagedModel = new DefaultTreeModel(unstagedRoot);
+	private JTree unstagedTree = new JTree(unstagedModel);
+	private DefaultMutableTreeNode stagedRoot = new DefaultMutableTreeNode("Staged Files");
+	private DefaultTreeModel stagedModel = new DefaultTreeModel(stagedRoot);
+	private JTree stagedTree = new JTree(stagedModel);
 	private JTextArea diffArea = new JTextArea();
-	private DefaultListModel<String> unstagedList = new DefaultListModel<>();
-	private DefaultListModel<String> stagedList = new DefaultListModel<>();
-	private JList<String> unstagedJlist = new JList<>(unstagedList);
-	private JList<String> stagedJlist = new JList<>(stagedList);
 	private JButton button1 = new JButton("Branch");
 	private JButton button2 = new JButton("Commit");
 	private JButton button3 = new JButton("Push");
@@ -32,14 +34,14 @@ public class RepositoryView {
 	private JButton switchFeatureButton = new JButton("Switch Feature");
 	private JButton mergeFeatureButton = new JButton("Merge Feature");
 	private JButton button7 = new JButton("Stage All");
-	private JButton button8 = new JButton("Unstage all");
+	private JButton button8 = new JButton("Commit + Push");
 
 	public void render() {
 		initPanels();
 		initToolbar();
-		initUnstagedList();
+		initUnstagedTree();
 		initDiffArea();
-		initStagedList();
+		initStagedTree();
 
 		panelTop.add(panelRight);
 	}
@@ -68,9 +70,8 @@ public class RepositoryView {
 		panelRight.add(toolbar, toolbarConstraints());
 	}
 
-	private void initStagedList() {
-		stagedJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		panelLeft.add(new JScrollPane(stagedJlist));
+	private void initStagedTree() {
+		panelLeft.add(new JScrollPane(stagedTree));
 	}
 
 	private void initDiffArea() {
@@ -79,9 +80,8 @@ public class RepositoryView {
 		panelRight.add(new JScrollPane(diffArea), diffAreaConstraints());
 	}
 
-	private void initUnstagedList() {
-		unstagedJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		panelLeft.add(new JScrollPane(unstagedJlist));
+	private void initUnstagedTree() {
+		panelLeft.add(new JScrollPane(unstagedTree));
 	}
 
 	private GridBagConstraints toolbarConstraints() {
@@ -112,8 +112,8 @@ public class RepositoryView {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.anchor = GridBagConstraints.FIRST_LINE_END;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
+		c.weightx = 1;
+		c.weighty = 0.2;
 		c.gridx = 1;
 		c.gridy = 1;
 
@@ -166,6 +166,96 @@ public class RepositoryView {
 	}
 
 	/**
+	 * @return the unstagedRoot
+	 */
+	public DefaultMutableTreeNode getUnstagedRoot() {
+		return unstagedRoot;
+	}
+
+	/**
+	 * @param unstagedRoot
+	 *            the unstagedRoot to set
+	 */
+	public void setUnstagedRoot(DefaultMutableTreeNode unstagedRoot) {
+		this.unstagedRoot = unstagedRoot;
+	}
+
+	/**
+	 * @return the unstagedModel
+	 */
+	public DefaultTreeModel getUnstagedModel() {
+		return unstagedModel;
+	}
+
+	/**
+	 * @param unstagedModel
+	 *            the unstagedModel to set
+	 */
+	public void setUnstagedModel(DefaultTreeModel unstagedModel) {
+		this.unstagedModel = unstagedModel;
+	}
+
+	/**
+	 * @return the unstagedTree
+	 */
+	public JTree getUnstagedTree() {
+		return unstagedTree;
+	}
+
+	/**
+	 * @param unstagedTree
+	 *            the unstagedTree to set
+	 */
+	public void setUnstagedTree(JTree unstagedTree) {
+		this.unstagedTree = unstagedTree;
+	}
+
+	/**
+	 * @return the stagedRoot
+	 */
+	public DefaultMutableTreeNode getStagedRoot() {
+		return stagedRoot;
+	}
+
+	/**
+	 * @param stagedRoot
+	 *            the stagedRoot to set
+	 */
+	public void setStagedRoot(DefaultMutableTreeNode stagedRoot) {
+		this.stagedRoot = stagedRoot;
+	}
+
+	/**
+	 * @return the stagedModel
+	 */
+	public DefaultTreeModel getStagedModel() {
+		return stagedModel;
+	}
+
+	/**
+	 * @param stagedModel
+	 *            the stagedModel to set
+	 */
+	public void setStagedModel(DefaultTreeModel stagedModel) {
+		this.stagedModel = stagedModel;
+	}
+
+	/**
+	 * @return the stagedTree
+	 */
+	public JTree getStagedTree() {
+		return stagedTree;
+	}
+
+	/**
+	 * @param stagedTree
+	 *            the stagedTree to set
+	 */
+	public void setStagedTree(JTree stagedTree) {
+		this.stagedTree = stagedTree;
+	}
+
+	/**
 	 * @return the diffArea
 	 */
 	public JTextArea getDiffArea() {
@@ -178,66 +268,6 @@ public class RepositoryView {
 	 */
 	public void setDiffArea(JTextArea diffArea) {
 		this.diffArea = diffArea;
-	}
-
-	/**
-	 * @return the unstagedList
-	 */
-	public DefaultListModel<String> getUnstagedList() {
-		return unstagedList;
-	}
-
-	/**
-	 * @param unstagedList
-	 *            the unstagedList to set
-	 */
-	public void setUnstagedList(DefaultListModel<String> unstagedList) {
-		this.unstagedList = unstagedList;
-	}
-
-	/**
-	 * @return the stagedList
-	 */
-	public DefaultListModel<String> getStagedList() {
-		return stagedList;
-	}
-
-	/**
-	 * @param stagedList
-	 *            the stagedList to set
-	 */
-	public void setStagedList(DefaultListModel<String> stagedList) {
-		this.stagedList = stagedList;
-	}
-
-	/**
-	 * @return the unstagedJlist
-	 */
-	public JList<String> getUnstagedJlist() {
-		return unstagedJlist;
-	}
-
-	/**
-	 * @param unstagedJlist
-	 *            the unstagedJlist to set
-	 */
-	public void setUnstagedJlist(JList<String> unstagedJlist) {
-		this.unstagedJlist = unstagedJlist;
-	}
-
-	/**
-	 * @return the stagedJlist
-	 */
-	public JList<String> getStagedJlist() {
-		return stagedJlist;
-	}
-
-	/**
-	 * @param stagedJlist
-	 *            the stagedJlist to set
-	 */
-	public void setStagedJlist(JList<String> stagedJlist) {
-		this.stagedJlist = stagedJlist;
 	}
 
 	/**
