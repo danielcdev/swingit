@@ -65,7 +65,7 @@ public class GitUtility {
 			controller.setCredentials(new UsernamePasswordCredentialsProvider(username, password));
 		}
 
-		controller.getGit().push().setCredentialsProvider(controller.getCredentials()).call();
+		controller.getGit().push().setCredentialsProvider(controller.getCredentials()).setProgressMonitor(controller.getProgressMonitor()).call();
 	}
 
 	@Async
@@ -78,9 +78,10 @@ public class GitUtility {
 			controller.setCredentials(new UsernamePasswordCredentialsProvider(username, password));
 		}
 
-		controller.getGit().push().setCredentialsProvider(controller.getCredentials()).setForce(force).call();
+		controller.getGit().push().setCredentialsProvider(controller.getCredentials()).setForce(force).setProgressMonitor(controller.getProgressMonitor()).call();
 	}
 
+	@Async
 	public void merge(RepositoryController controller)
 			throws IOException, InvalidRemoteException, TransportException, GitAPIException {
 		if (controller.getCredentials() == null) {
@@ -93,11 +94,11 @@ public class GitUtility {
 		String currentBranch = controller.getGit().getRepository().getBranch();
 		Ref currentRef = controller.getGit().getRepository().findRef(currentBranch);
 
-		controller.getGit().pull().setRemoteBranchName("master").setCredentialsProvider(controller.getCredentials())
+		controller.getGit().pull().setRemoteBranchName("master").setCredentialsProvider(controller.getCredentials()).setProgressMonitor(controller.getProgressMonitor())
 				.call();
 		controller.getGit().checkout().setName("master").call();
 
-		controller.getGit().merge().include(currentRef).setSquash(true).setStrategy(MergeStrategy.OURS).call();
+		controller.getGit().merge().include(currentRef).setSquash(true).setStrategy(MergeStrategy.OURS).setProgressMonitor(controller.getProgressMonitor()).call();
 
 		controller.getGit().commit().setMessage("Merge branch '" + currentBranch + "'").call();
 		push(controller, true);

@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
@@ -25,6 +26,7 @@ public class RepositoryView {
 	private DefaultMutableTreeNode stagedRoot = new DefaultMutableTreeNode("Staged Files");
 	private DefaultTreeModel stagedModel = new DefaultTreeModel(stagedRoot);
 	private JTree stagedTree = new JTree(stagedModel);
+	private JProgressBar progressBar = new JProgressBar();
 	private JTextArea diffArea = new JTextArea();
 	private JButton button1 = new JButton("Branch");
 	private JButton button2 = new JButton("Commit");
@@ -42,6 +44,7 @@ public class RepositoryView {
 		initUnstagedTree();
 		initDiffArea();
 		initStagedTree();
+		initProgressBar();
 
 		panelTop.add(panelRight);
 	}
@@ -74,6 +77,11 @@ public class RepositoryView {
 		panelLeft.add(new JScrollPane(stagedTree));
 	}
 
+	private void initProgressBar() {
+		progressBar.setStringPainted(true);
+		panelRight.add(progressBar, progressBarConstraints());
+	}
+
 	private void initDiffArea() {
 		diffArea.setEditable(false);
 		diffArea.setLineWrap(false);
@@ -82,6 +90,18 @@ public class RepositoryView {
 
 	private void initUnstagedTree() {
 		panelLeft.add(new JScrollPane(unstagedTree));
+	}
+
+	private GridBagConstraints progressBarConstraints() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.weightx = 0.2;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = 2;
+
+		return c;
 	}
 
 	private GridBagConstraints toolbarConstraints() {
@@ -253,6 +273,21 @@ public class RepositoryView {
 	 */
 	public void setStagedTree(JTree stagedTree) {
 		this.stagedTree = stagedTree;
+	}
+
+	/**
+	 * @return the progressBar
+	 */
+	public JProgressBar getProgressBar() {
+		return progressBar;
+	}
+
+	/**
+	 * @param progressBar
+	 *            the progressBar to set
+	 */
+	public void setProgressBar(JProgressBar progressBar) {
+		this.progressBar = progressBar;
 	}
 
 	/**

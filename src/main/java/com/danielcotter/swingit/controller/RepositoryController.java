@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.jgit.api.Git;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.danielcotter.swingit.listener.ListenerFactory;
 import com.danielcotter.swingit.model.StagingModel;
+import com.danielcotter.swingit.utility.GitProgressMonitor;
 import com.danielcotter.swingit.utility.GitUtility;
 import com.danielcotter.swingit.utility.GuiUtility;
 import com.danielcotter.swingit.utility.ModalUtility;
@@ -48,6 +50,9 @@ public class RepositoryController {
 
 	@Autowired
 	private StagingModel stagingModel;
+
+	@Autowired
+	private GitProgressMonitor progressMonitor;
 
 	private CredentialsProvider credentials = null;
 	private List<String> lastUnstaged = new ArrayList<>();
@@ -153,6 +158,11 @@ public class RepositoryController {
 		}
 	}
 
+	@PostConstruct
+	private void constructed() {
+		progressMonitor.setController(this);
+	}
+
 	private void updateUnstagedFiles(Status status) {
 		List<String> unstagedFiles = gitUtility.getUnstaged(status);
 
@@ -242,33 +252,33 @@ public class RepositoryController {
 	}
 
 	/**
-	 * @return the gitFunctions
+	 * @return the gitUtility
 	 */
-	public GitUtility getGitFunctions() {
+	public GitUtility getGitUtility() {
 		return gitUtility;
 	}
 
 	/**
-	 * @param gitFunctions
-	 *            the gitFunctions to set
+	 * @param gitUtility
+	 *            the gitUtility to set
 	 */
-	public void setGitFunctions(GitUtility gitFunctions) {
-		this.gitUtility = gitFunctions;
+	public void setGitUtility(GitUtility gitUtility) {
+		this.gitUtility = gitUtility;
 	}
 
 	/**
-	 * @return the guiFunctions
+	 * @return the guiUtility
 	 */
-	public GuiUtility getGuiFunctions() {
+	public GuiUtility getGuiUtility() {
 		return guiUtility;
 	}
 
 	/**
-	 * @param guiFunctions
-	 *            the guiFunctions to set
+	 * @param guiUtility
+	 *            the guiUtility to set
 	 */
-	public void setGuiFunctions(GuiUtility guiFunctions) {
-		this.guiUtility = guiFunctions;
+	public void setGuiUtility(GuiUtility guiUtility) {
+		this.guiUtility = guiUtility;
 	}
 
 	/**
@@ -284,6 +294,36 @@ public class RepositoryController {
 	 */
 	public void setModalUtility(ModalUtility modalUtility) {
 		this.modalUtility = modalUtility;
+	}
+
+	/**
+	 * @return the stagingModel
+	 */
+	public StagingModel getStagingModel() {
+		return stagingModel;
+	}
+
+	/**
+	 * @param stagingModel
+	 *            the stagingModel to set
+	 */
+	public void setStagingModel(StagingModel stagingModel) {
+		this.stagingModel = stagingModel;
+	}
+
+	/**
+	 * @return the progressMonitor
+	 */
+	public GitProgressMonitor getProgressMonitor() {
+		return progressMonitor;
+	}
+
+	/**
+	 * @param progressMonitor
+	 *            the progressMonitor to set
+	 */
+	public void setProgressMonitor(GitProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
 	}
 
 	/**
